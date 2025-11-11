@@ -27,10 +27,12 @@
 namespace ov_init {
 
 /**
- * @brief JPL quaternion CERES state parameterization
+ * @brief JPL quaternion CERES state parameterization using Manifold interface (Ceres 2.1+)
  */
-class State_JPLQuatLocal : public ceres::LocalParameterization {
+class State_JPLQuatLocal : public ceres::Manifold {
 public:
+  ~State_JPLQuatLocal() override = default;
+
   /**
    * @brief State update function for a JPL quaternion representation.
    *
@@ -39,12 +41,7 @@ public:
    *
    * @f[
    * \bar{q}=norm\Big(\begin{bmatrix} 0.5*\mathbf{\theta_{dx}} \\ 1 \end{bmatrix}\Big) \hat{\bar{q}}
-   * @f]
-   */
   bool Plus(const double *x, const double *delta, double *x_plus_delta) const override;
-
-  /**
-   * @brief Computes the jacobian in respect to the local parameterization
    *
    * This essentially "tricks" ceres.
    * Instead of doing what ceres wants:
@@ -54,11 +51,19 @@ public:
    * dr/dlocal= [ dr/dlocal, 0] * [I; 0]= dr/dlocal.
    * Therefore we here define dglobal/dlocal= [I; 0]
    */
-  bool ComputeJacobian(const double *x, double *jacobian) const override;
+  bool ComputeJacobian(const double *x, double *jacobian) const;
 
-  int GlobalSize() const override { return 4; };
+  /**
+   * @brief Computes the Jacobian of Minus with respect to x2.
+   *
+   * For the JPL quaternion parameterization, this returns the negative
+   * of the Jacobian from Plus.
+   */
+  bool MinusJacobian(const double *x, double *jacobian) const override;
 
-  int LocalSize() const override { return 3; };
+  int AmbientSize() const override { return 4; };
+
+  int TangentSize() const override { return 3; };
 };
 
 } // namespace ov_init

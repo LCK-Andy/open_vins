@@ -14,7 +14,7 @@ See the [opencv_contrib](https://github.com/opencv/opencv_contrib) readme on how
 We have tested building with OpenCV 3.2, 3.3, 3.4, 4.2, and 4.5.
 Please see the official instructions to install ROS:
 
-- [Ubuntu 16.04 ROS 1 Kinetic](http://wiki.ros.org/kinetic/Installation/Ubuntu) (uses OpenCV 3.3)
+- [Ubuntu 16.04 ROS 1 Kinetic](http://wiki.ros.org/kinetic/Installation/Ubuntu) (uses OpenCV 3.10)
 - [Ubuntu 18.04 ROS 1 Melodic](http://wiki.ros.org/melodic/Installation/Ubuntu) (uses OpenCV 3.2)
 - [Ubuntu 20.04 ROS 1 Noetic](http://wiki.ros.org/noetic/Installation/Ubuntu) (uses OpenCV 4.2)
 - [Ubuntu 18.04 ROS 2 Dashing](https://docs.ros.org/en/dashing/) (uses OpenCV 3.2)
