@@ -48,6 +48,13 @@ bool State_JPLQuatLocal::Plus(const double *x, const double *delta, double *x_pl
   return true;
 }
 
+bool State_JPLQuatLocal::PlusJacobian(const double *x, double *jacobian) const {
+  Eigen::Map<Eigen::Matrix<double, 4, 3, Eigen::RowMajor>> j(jacobian);
+  j.topRows<3>().setIdentity();
+  j.bottomRows<1>().setZero();
+  return true;
+}
+
 bool State_JPLQuatLocal::ComputeJacobian(const double *x, double *jacobian) const {
   Eigen::Map<Eigen::Matrix<double, 4, 3, Eigen::RowMajor>> j(jacobian);
   j.topRows<3>().setIdentity();
@@ -55,11 +62,21 @@ bool State_JPLQuatLocal::ComputeJacobian(const double *x, double *jacobian) cons
   return true;
 }
 
+bool State_JPLQuatLocal::Minus(const double *y, const double *z, double *y_minus_z) const {
+  // Compute the inverse of z (conjugate for unit quaternion)
+  Eigen::Map<const Eigen::Vector4d> q_z(z);
+  Eigen::Vector4d q_z_inv;
+  q_z_inv << -q_z.block(0, 0, 3, 1), q_z(3);
+
+  // Compute y * z_inv
+  Eigen::Map<const Eigen::Vector4d> q_y(y);
+  Eigen::Map<Eigen::Vector4d> result(y_minus_z);
+  result = ov_core::quat_multiply(q_y, q_z_inv);
+  return true;
+}
+
 bool State_JPLQuatLocal::MinusJacobian(const double *x, double *jacobian) const {
   // For quaternion manifold, MinusJacobian is typically the negative of PlusJacobian
-  // However, in the context of the JPL quaternion local parameterization,
-  // this returns the Jacobian of the Minus operation with respect to x2.
-  // Following the same pattern as PlusJacobian for consistency.
   Eigen::Map<Eigen::Matrix<double, 3, 4, Eigen::RowMajor>> j(jacobian);
   j.block(0, 0, 3, 3).setIdentity();
   j.block(0, 3, 3, 1).setZero();

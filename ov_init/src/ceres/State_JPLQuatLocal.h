@@ -41,7 +41,12 @@ public:
    *
    * @f[
    * \bar{q}=norm\Big(\begin{bmatrix} 0.5*\mathbf{\theta_{dx}} \\ 1 \end{bmatrix}\Big) \hat{\bar{q}}
+   * @f]
+   */
   bool Plus(const double *x, const double *delta, double *x_plus_delta) const override;
+
+  /**
+   * @brief Computes the jacobian in respect to the local parameterization
    *
    * This essentially "tricks" ceres.
    * Instead of doing what ceres wants:
@@ -51,6 +56,11 @@ public:
    * dr/dlocal= [ dr/dlocal, 0] * [I; 0]= dr/dlocal.
    * Therefore we here define dglobal/dlocal= [I; 0]
    */
+  bool PlusJacobian(const double *x, double *jacobian) const override;
+
+  /**
+   * @brief Computes the jacobian for the Minus operation
+   */
   bool ComputeJacobian(const double *x, double *jacobian) const;
 
   /**
@@ -59,6 +69,8 @@ public:
    * For the JPL quaternion parameterization, this returns the negative
    * of the Jacobian from Plus.
    */
+  bool Minus(const double *y, const double *z, double *y_minus_z) const override;
+
   bool MinusJacobian(const double *x, double *jacobian) const override;
 
   int AmbientSize() const override { return 4; };
